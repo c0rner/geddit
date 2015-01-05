@@ -84,7 +84,7 @@ func (p *Paginator) list(after bool) ([]Link, error) {
 	return links, nil
 }
 
-func (p *Paginator) values(after bool) *url.Values {
+func (p *Paginator) values(after bool) url.Values {
 	v := url.Values{}
 	if p.name != "" {
 		if after {
@@ -100,5 +100,5 @@ func (p *Paginator) values(after bool) *url.Values {
 		v.Set("limit", fmt.Sprintf("%d", p.limit))
 	}
 
-	return &v
+	return v
 }
