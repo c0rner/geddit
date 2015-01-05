@@ -37,7 +37,7 @@ type Thing struct {
 
 type Created struct {
 	Local json.Number `json:"created"`     // Time of creation in local epoch-second format
-	Utc   json.Number `json:"created_utc"` // Time of creation in UTC epoch-second format
+	UTC   json.Number `json:"created_utc"` // Time of creation in UTC epoch-second format
 }
 
 type Votable struct {
@@ -98,4 +98,13 @@ type Link struct {
 	Url              string          `json:"url"`                    //
 	Visited          bool            `json:"visited"`                //
 	Created
+}
+
+type CommentResult struct {
+	ID           string `json:"id"`          // UNKNOWN
+	Name         string `json:"link"`        // Full name of item, e.g. "t3_c3v7f8u"
+	ComntentHtml string `json:"contentHTML"` // Comment text HTML formatted
+	Content      string `json:"contentText"` // Comment text plain
+	Replies      string `json:"replies"`     // UNKNOWN
+	Parent       string `json:"parent"`      // Parent item
 }
