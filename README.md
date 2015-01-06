@@ -1,7 +1,10 @@
 # Geddit
 Reddit API bindings for Go. Things are currently in a state of flux as I try to figure out what parts of the API I need and how to implement them.
 
-## Basic usage
+## Documentation
+http://godoc.org/github.com/c0rner/geddit
+
+### Example: Listing 5 newest /r/worldnews posts
 ```go
 session := geddit.NewSession("GedditBot/1.0")
 listing := session.Listing("worldnews/new")
