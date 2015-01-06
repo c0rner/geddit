@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	MaxLimit = 100
+	MaxLimit = 100 // Listing max number of returned Link items
 )
 
 // Paginator represents a Listing endpoint

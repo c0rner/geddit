@@ -1,6 +1,27 @@
 package geddit
 
+import (
+	"fmt"
+	"log"
+)
+
+func ExampleAPIError() {
+	session := NewSession("GedditBot/1.0")
+retry:
+	_, err = session.Comment("t3_xxxxx", "This is a demo")
+	if err != nil {
+		if apierr, ok := err.(APIError); ok {
+			if apierr.IsRatelimited() {
+				fmt.Printf("We are being ratelimited for %.0f minutes\n", apierr.Duration().Minutes())
+				time.Sleep(apierr.Duration())
+				goto retry
+			}
+		}
+	}
+}
+
 func ExampleSession_Listing() {
+	session := NewSession("GedditBot/1.0")
 	listing := session.Listing("worldnews/new")
 	listing.SetLimit(5)
 	links, err := listing.Next()
@@ -16,18 +37,18 @@ func ExampleSession_Listing() {
 }
 
 func ExampleSession_Login_auth() {
-	session := geddit.NewSession("GedditBot/1.0")
-	auth := geddit.Authconfig{
+	session := NewSession("GedditBot/1.0")
+	auth := Authconfig{
 		User:     "username",
 		Password: "password",
 	}
-	err = session.Login(&auth)
+	err := session.Login(&auth)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func ExampleSession_Login_cookie() {
-	session := geddit.NewSession("GedditBot/1.0")
+	session := NewSession("GedditBot/1.0")
 	session.Cookie = "reddit_session=4826...d8eca"
 }
