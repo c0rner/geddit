@@ -3,12 +3,13 @@ package geddit
 import (
 	"fmt"
 	"log"
+	"time"
 )
 
 func ExampleAPIError() {
 	session := NewSession("GedditBot/1.0")
 retry:
-	_, err = session.Comment("t3_xxxxx", "This is a demo")
+	_, err := session.Comment("t3_xxxxx", "This is a demo")
 	if err != nil {
 		if apierr, ok := err.(APIError); ok {
 			if apierr.IsRatelimited() {
@@ -36,7 +37,7 @@ func ExampleSession_Listing() {
 	}
 }
 
-func ExampleSession_Login_auth() {
+func ExampleSession_Login() {
 	session := NewSession("GedditBot/1.0")
 	auth := Authconfig{
 		User:     "username",
@@ -46,9 +47,4 @@ func ExampleSession_Login_auth() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func ExampleSession_Login_cookie() {
-	session := NewSession("GedditBot/1.0")
-	session.Cookie = "reddit_session=4826...d8eca"
 }
