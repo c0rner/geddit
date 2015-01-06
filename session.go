@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -36,7 +35,7 @@ func NewSession(ua string) *Session {
 }
 
 func (s *Session) Me() (*Account, error) {
-	resp, err := s.get(BuildURL(APIMe, true), nil)
+	resp, err := s.get(buildURL(apiMe, true), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +66,7 @@ func (s *Session) Me() (*Account, error) {
 func (s *Session) Listing(sub string) *Paginator {
 	p := Paginator{}
 	p.s = s
-	p.url = fmt.Sprintf(BuildURL(APIListing, true), sub)
+	p.url = fmt.Sprintf(buildURL(apiListing, true), sub)
 	return &p
 }
 
@@ -78,7 +77,7 @@ func (s *Session) Comment(p string, t string) (*CommentResult, error) {
 	v.Set("thing_id", p)
 	v.Set("text", t)
 
-	resp, err := s.post(BuildURL(APIComment, true), v)
+	resp, err := s.post(buildURL(apiComment, true), v)
 	/*
 		buf := new(bytes.Buffer)
 		buf.ReadFrom(resp.Body)
@@ -127,7 +126,7 @@ func (s *Session) Login(ac *Authconfig) error {
 	s.Cookie = ""
 	s.modhash = ""
 
-	resp, err := s.post(BuildURL(APILogin, true), v)
+	resp, err := s.post(buildURL(apiLogin, true), v)
 	if err != nil {
 		return err
 	}
@@ -167,7 +166,7 @@ func (s *Session) Login(ac *Authconfig) error {
 			}
 		}
 	*/
-	s.Cookie = fmt.Sprintf("%s=%s", StrCookie, reply.Cookie)
+	s.Cookie = fmt.Sprintf("%s=%s", strCookie, reply.Cookie)
 	s.modhash = reply.Modhash
 
 	return nil
@@ -209,16 +208,4 @@ func (s *Session) post(u string, v url.Values) (*http.Response, error) {
 	req.Header = s.httpHeaders()
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	return s.client.Do(req)
-}
-
-// getJSON is a convenience function used by all JSON API methods
-func getJSON(rc io.ReadCloser) (*jsonAPIReply, error) {
-	r := struct {
-		JSON jsonAPIReply `json:"json"`
-	}{}
-	err := json.NewDecoder(rc).Decode(&r)
-	if err != nil {
-		return nil, err
-	}
-	return &r.JSON, newAPIError(&r.JSON)
 }

@@ -14,9 +14,10 @@ const (
 	TypeListing   = "Listing"
 )
 
-// Listing endpoint represents paginated content. Listing is not based on the Thing endpoint and does not have 'id' nor 'name'.
+// Listing endpoint represents paginated content and it's contents are
+// exposed via the Paginator type
 // https://github.com/reddit/reddit/wiki/JSON#listing
-type Listing struct {
+type listing struct {
 	Data struct {
 		After    string  `json:"after"`
 		Before   string  `json:"before"`

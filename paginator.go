@@ -62,17 +62,17 @@ func (p *Paginator) list(after bool) ([]Link, error) {
 	}
 	defer resp.Body.Close()
 
-	listing := Listing{}
-	err = json.NewDecoder(resp.Body).Decode(&listing)
+	list := listing{}
+	err = json.NewDecoder(resp.Body).Decode(&list)
 	if err != nil {
 		return nil, err
 	}
 
-	if listing.Kind != TypeListing {
+	if list.Kind != TypeListing {
 		// TODO.. handle error
 	}
 	var links []Link
-	for _, c := range listing.Data.Children {
+	for _, c := range list.Data.Children {
 		link := Link{}
 		err = json.Unmarshal(c.Data, &link)
 		if err != nil {
