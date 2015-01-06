@@ -57,14 +57,13 @@ func (s *Session) Me() (*Account, error) {
 		return nil, err
 	}
 
-	s.modhash = account.Modhash
 	return &account, nil
 }
 
 // Listing returns a list of new Link items using supplied Paginator page.
 // If page is nil the Reddit defaults are used.
-func (s *Session) Listing(sub string) *Paginator {
-	p := Paginator{}
+func (s *Session) Listing(sub string) Listing {
+	p := paginator{}
 	p.s = s
 	p.url = fmt.Sprintf(buildURL(apiListing, true), sub)
 	return &p
@@ -116,15 +115,38 @@ func (s *Session) Comment(p string, t string) (*CommentResult, error) {
 
 // Login authenticates the current session
 func (s *Session) Login(ac *Authconfig) error {
-	if ac == nil || len(ac.User) == 0 || len(ac.Password) == 0 {
-		return errors.New("No authentixation credentials")
+	if ac == nil {
+		return errors.New("No authentication credentials")
 	}
-	v := url.Values{"api_type": {"json"}}
-	v.Set("user", ac.User)
-	v.Set("passwd", ac.Password)
 
 	s.Cookie = ""
 	s.modhash = ""
+
+	if len(ac.Cookie) == 0 {
+		err := s.authenticate(ac.User, ac.Password)
+		if err == nil {
+			ac.Cookie = s.Cookie
+		}
+		return err
+	}
+
+	s.Cookie = ac.Cookie
+	acct, err := s.Me()
+	if err != nil {
+		return err
+	}
+	if len(acct.Modhash) == 0 {
+		return errors.New("Bad cookie")
+	}
+
+	s.modhash = acct.Modhash
+	return nil
+}
+
+func (s *Session) authenticate(u string, p string) error {
+	v := url.Values{"api_type": {"json"}}
+	v.Set("user", u)
+	v.Set("passwd", p)
 
 	resp, err := s.post(buildURL(apiLogin, true), v)
 	if err != nil {

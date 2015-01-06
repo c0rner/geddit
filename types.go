@@ -14,8 +14,13 @@ const (
 	TypeListing   = "Listing"
 )
 
-// Listing endpoint represents paginated content and it's contents are
-// exposed via the Paginator type
+// Listing endpoint represents paginated collection of Link items
+type Listing interface {
+	Next() ([]Link, error)
+	Previous() ([]Link, error)
+	SetLimit(int)
+}
+
 // https://github.com/reddit/reddit/wiki/JSON#listing
 type listing struct {
 	Data struct {
@@ -99,13 +104,15 @@ type Link struct {
 	Url              string          `json:"url"`                    //
 	Visited          bool            `json:"visited"`                //
 	Created
+	Votable
 }
 
+// CommentResult is returned when submitting a new comment
 type CommentResult struct {
-	ID           string `json:"id"`          // UNKNOWN
-	Name         string `json:"link"`        // Full name of item, e.g. "t3_c3v7f8u"
-	ComntentHtml string `json:"contentHTML"` // Comment text HTML formatted
-	Content      string `json:"contentText"` // Comment text plain
-	Replies      string `json:"replies"`     // UNKNOWN
-	Parent       string `json:"parent"`      // Parent item
+	ID          string `json:"id"`          // UNKNOWN
+	Name        string `json:"link"`        // Full name of item, e.g. "t3_c3v7f8u"
+	ContentHtml string `json:"contentHTML"` // Comment text HTML formatted
+	Content     string `json:"contentText"` // Comment text plain
+	Replies     string `json:"replies"`     // UNKNOWN
+	Parent      string `json:"parent"`      // Parent item
 }

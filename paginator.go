@@ -10,8 +10,7 @@ const (
 	MaxLimit = 100 // Listing max number of returned Link items
 )
 
-// Paginator represents a Listing endpoint
-type Paginator struct {
+type paginator struct {
 	s     *Session
 	url   string
 	name  string // Fullname of reference Thing
@@ -20,7 +19,7 @@ type Paginator struct {
 }
 
 // Next returns a new set of links directly following a previous request.
-func (p *Paginator) Next() ([]Link, error) {
+func (p *paginator) Next() ([]Link, error) {
 	resp, err := p.list(true)
 	if err != nil {
 		return nil, err
@@ -32,7 +31,7 @@ func (p *Paginator) Next() ([]Link, error) {
 }
 
 // Previous returns a new set of links directly preceeding a previous request.
-func (p *Paginator) Previous() ([]Link, error) {
+func (p *paginator) Previous() ([]Link, error) {
 	resp, err := p.list(false)
 	if err != nil {
 		return nil, err
@@ -44,7 +43,7 @@ func (p *Paginator) Previous() ([]Link, error) {
 }
 
 // SetLimit sets the max number of links returned from calls to Previous and Next
-func (p *Paginator) SetLimit(l int) {
+func (p *paginator) SetLimit(l int) {
 	if l < 0 {
 		l = 0
 	}
@@ -54,7 +53,7 @@ func (p *Paginator) SetLimit(l int) {
 	p.limit = l
 }
 
-func (p *Paginator) list(after bool) ([]Link, error) {
+func (p *paginator) list(after bool) ([]Link, error) {
 	v := p.values(after)
 	resp, err := p.s.get(p.url, v)
 	if err != nil {
@@ -84,7 +83,7 @@ func (p *Paginator) list(after bool) ([]Link, error) {
 	return links, nil
 }
 
-func (p *Paginator) values(after bool) url.Values {
+func (p *paginator) values(after bool) url.Values {
 	v := url.Values{}
 	if p.name != "" {
 		if after {
