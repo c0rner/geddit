@@ -20,14 +20,6 @@ const (
 	strCookie = "reddit_session"
 )
 
-// AuthConfig is used when authenticating a Reddit session using User and Password.
-// When calling Login if a session cookie already is set it will be discarded regardless
-// of authentication status.
-type Authconfig struct {
-	User     string // Reddit username
-	Password string // Authentication password
-}
-
 // jsonApiReply is only used for json api replies
 // for return codes.
 type jsonAPIReply struct {
