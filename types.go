@@ -1,4 +1,4 @@
-package geddit
+package rego
 
 import "encoding/json"
 

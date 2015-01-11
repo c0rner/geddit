@@ -1,4 +1,4 @@
-package geddit
+package rego
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 func ExampleAPIError() {
-	session := NewSession("GedditBot/1.0")
+	session := NewSession("RegoBot/1.0")
 retry:
 	_, err := session.Comment("t3_xxxxx", "This is a demo")
 	if err != nil {
@@ -22,7 +22,7 @@ retry:
 }
 
 func ExampleSession_Listing() {
-	session := NewSession("GedditBot/1.0")
+	session := NewSession("RegoBot/1.0")
 	listing := session.Listing("worldnews/new")
 	listing.SetLimit(5)
 	links, err := listing.Next()
@@ -38,7 +38,7 @@ func ExampleSession_Listing() {
 }
 
 func ExampleSession_Login() {
-	session := NewSession("GedditBot/1.0")
+	session := NewSession("RegoBot/1.0")
 	auth := Authconfig{
 		User:     "username",
 		Password: "password",
