@@ -17,7 +17,7 @@ func buildURL(method string, secure bool) string {
 }
 
 // getJSON is a convenience function used by all JSON API methods
-func getJSON(rc io.ReadCloser) (*jsonAPIReply, error) {
+func getJSON(rc io.Reader) (*jsonAPIReply, error) {
 	r := struct {
 		JSON jsonAPIReply `json:"json"`
 	}{}
