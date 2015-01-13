@@ -8,6 +8,11 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
+)
+
+var (
+	ErrBadCookie = errors.New("Bad cookie")
 )
 
 type RateLimit struct {
@@ -24,6 +29,7 @@ type Session struct {
 	modhash   string
 	RateLimit RateLimit // RateLimit usage is updated on each API request
 	useragent string
+	lock      sync.Mutex
 }
 
 // NewSession creates an unauthenticated Reddit session
@@ -77,11 +83,10 @@ func (s *Session) Comment(p string, t string) (*CommentResult, error) {
 	v.Set("text", t)
 
 	resp, err := s.post(buildURL(apiComment, true), v)
-	/*
-		buf := new(bytes.Buffer)
-		buf.ReadFrom(resp.Body)
-		fmt.Printf("Data: %#v\n", buf.String())
-	*/
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, errors.New(resp.Status)
@@ -113,34 +118,28 @@ func (s *Session) Comment(p string, t string) (*CommentResult, error) {
 	return &cr, nil
 }
 
-// Login authenticates the current session
-func (s *Session) Login(ac *Authconfig) error {
-	if ac == nil {
-		return errors.New("No authentication credentials")
-	}
-
-	s.Cookie = ""
-	s.modhash = ""
-
-	if len(ac.Cookie) == 0 {
-		err := s.authenticate(ac.User, ac.Password)
-		if err == nil {
-			ac.Cookie = s.Cookie
-		}
-		return err
-	}
-
-	s.Cookie = ac.Cookie
+// SetCookie authenticates the current session using a pre-authenticated cookie
+func (s *Session) SetCookie(c string) error {
+	s.Cookie = c
 	acct, err := s.Me()
 	if err != nil {
 		return err
 	}
 	if len(acct.Modhash) == 0 {
-		return errors.New("Bad cookie")
+		return ErrBadCookie
 	}
 
 	s.modhash = acct.Modhash
 	return nil
+}
+
+// Login authenticates the current session using username and password
+func (s *Session) Login(u string, p string) error {
+	// Clear cookie and modhash before sending request
+	s.Cookie = ""
+	s.modhash = ""
+
+	return s.authenticate(u, p)
 }
 
 func (s *Session) authenticate(u string, p string) error {
@@ -152,6 +151,7 @@ func (s *Session) authenticate(u string, p string) error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		return errors.New(resp.Status)
@@ -221,7 +221,7 @@ func (s *Session) get(u string, v url.Values) (*http.Response, error) {
 
 func (s *Session) post(u string, v url.Values) (*http.Response, error) {
 	if v == nil {
-		return nil, errors.New("No values supplied")
+		v = url.Values{}
 	}
 	req, err := http.NewRequest("POST", u, strings.NewReader(v.Encode()))
 	if err != nil {
@@ -229,5 +229,12 @@ func (s *Session) post(u string, v url.Values) (*http.Response, error) {
 	}
 	req.Header = s.httpHeaders()
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	return s.client.Do(req)
+	return s.do(req)
+}
+
+func (s *Session) do(req *http.Request) (*http.Response, error) {
+	s.lock.Lock()
+	result, err := s.client.Do(req)
+	s.lock.Unlock()
+	return result, err
 }

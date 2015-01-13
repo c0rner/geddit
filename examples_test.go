@@ -39,11 +39,7 @@ func ExampleSession_Listing() {
 
 func ExampleSession_Login() {
 	session := NewSession("RegoBot/1.0")
-	auth := Authconfig{
-		User:     "username",
-		Password: "password",
-	}
-	err := session.Login(&auth)
+	err := session.Login("username", "password")
 	if err != nil {
 		log.Fatal(err)
 	}
