@@ -20,3 +20,8 @@ for _, l := range links {
         fmt.Printf("Title: %30s, Url: %s\n", l.Title, l.Url)
 }
 ```
+
+## TODO
+- [ ] Unauthenticated sessions should use http by default to take advantage of Reddit caches
+  - Hitting Reddit caches are 'free' requests and do not count against rate limits
+  - This will be configurable for cases where TLS is desired

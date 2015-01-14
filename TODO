@@ -1,2 +1,0 @@
-* Make it so that unauthenticated sessions use http, except for login, and authenticated always use https.
-  This allows use of Redit caches and also get some "free" requests that do not count towards rate limits.
