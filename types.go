@@ -1,6 +1,7 @@
 package rego
 
 import "encoding/json"
+import "time"
 
 // Thing types (kind)
 const (
@@ -44,6 +45,11 @@ type Thing struct {
 type Created struct {
 	Local json.Number `json:"created"`     // Time of creation in local epoch-second format
 	UTC   json.Number `json:"created_utc"` // Time of creation in UTC epoch-second format
+}
+
+// Time returns time.Time in local format from UTC
+func (c *Created) Time() time.Time {
+	return timeFromNumber(c.UTC)
 }
 
 type Votable struct {
