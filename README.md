@@ -1,4 +1,4 @@
-# Rego
+# Rego ![Gopher](https://github.com/c0rner/c0rner.github.io/blob/master/images/redditgopher_small.png)
 Reddit API bindings for Go. Things are currently in a state of flux as I try to figure out what parts of the API I need and how to implement them.
 
 ## Documentation
