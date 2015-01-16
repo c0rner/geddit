@@ -66,17 +66,16 @@ func (s *Session) Me() (*Account, error) {
 	return &account, nil
 }
 
-// Listing returns a list of new Link items using supplied Paginator page.
-// If page is nil the Reddit defaults are used.
-func (s *Session) Listing(sub string) Listing {
-	p := paginator{}
+// Listing returns a paginated Listing wrapped in a Page type
+func (s *Session) Listing(sub string) *Page {
+	p := Page{}
 	p.s = s
 	p.url = fmt.Sprintf(buildURL(apiListing, true), sub)
 	return &p
 }
 
-// Comment posts a reply to parent post p using the raw text t returning
-// new new comments fullname id
+// Comment posts a reply to parent post p using the raw text t.
+// A successfull post will return the new comments fullname id.
 func (s *Session) Comment(p string, t string) (*CommentResult, error) {
 	v := url.Values{"api_type": {"json"}}
 	v.Set("thing_id", p)

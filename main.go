@@ -9,7 +9,7 @@ const (
 	apiClear   = "/api/clear_sessions"
 	apiComment = "/api/comment"
 	apiDelete  = "/api/del"
-	apiListing = "/r/%s.json"
+	apiListing = "/%s.json"
 	apiLogin   = "/api/login"
 	apiMe      = "/api/me.json"
 	apiSubmit  = "/api/submit"

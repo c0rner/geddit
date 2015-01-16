@@ -13,7 +13,7 @@ retry:
 	if err != nil {
 		if apierr, ok := err.(APIError); ok {
 			if apierr.IsRatelimited() {
-				fmt.Printf("We are being ratelimited for %.0f minutes\n", apierr.Duration().Minutes())
+				fmt.Printf("We are being ratelimited for %d minutes\n", int(apierr.Duration().Minutes()))
 				time.Sleep(apierr.Duration())
 				goto retry
 			}
@@ -23,17 +23,17 @@ retry:
 
 func ExampleSession_Listing() {
 	session := NewSession("RegoBot/1.0")
-	listing := session.Listing("worldnews/new")
-	listing.SetLimit(5)
-	links, err := listing.Next()
+	page := session.Listing("r/worldnews/new")
+	page.SetLimit(5)
+	list, err := page.Next()
 	if err != nil {
 		log.Print(err)
 	}
-	for _, l := range links {
+	for _, l := range list.Links() {
 		if l.Selfpost {
 			continue
 		}
-		fmt.Printf("Title: %30s Url: %s\n", l.Title, l.Url)
+		fmt.Printf("Title: %30s Url: %s\n", l.Title, l.URL)
 	}
 }
 

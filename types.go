@@ -15,24 +15,6 @@ const (
 	TypeListing   = "Listing"
 )
 
-// Listing endpoint represents paginated collection of Link items
-type Listing interface {
-	Next() ([]Link, error)
-	Previous() ([]Link, error)
-	SetLimit(int)
-}
-
-// https://github.com/reddit/reddit/wiki/JSON#listing
-type listing struct {
-	Data struct {
-		After    string  `json:"after"`
-		Before   string  `json:"before"`
-		Children []Thing `json:"children"`
-		Modhash  string  `json:"modhash"`
-	} `json:"data"`
-	Kind string `json:"kind"` // Always "Listing"
-}
-
 // Thing endpoint represents the Reddit thing base class.
 // https://github.com/reddit/reddit/wiki/JSON#thing-reddit-base-class
 type Thing struct {
@@ -97,8 +79,8 @@ type Link struct {
 	Name             string          `json:"name"`                   // Fullname of item, e.g. "t3_c3v7f8u"
 	NumComments      int             `json:"num_comments"`           //
 	Permalink        string          `json:"permalink"`              // Relative URL of the permanent link for this link
-	Saved            bool            `json:"saved"`                  //
-	Score            int             `json:"score"`                  //
+	Saved            bool            `json:"saved"`                  // True if this post is saved by the logged in user
+	Score            int             `json:"score"`                  // The net-score of the link
 	Selfpost         bool            `json:"is_self"`                // True if this link is a selfpost
 	SelftextHtml     string          `json:"selftext_html"`          //
 	Selftext         string          `json:"selftext"`               //
@@ -107,8 +89,36 @@ type Link struct {
 	Subreddit        string          `json:"subreddit"`              //
 	Thumbnail        string          `json:"thumbnail"`              //
 	Title            string          `json:"title"`                  //
-	Url              string          `json:"url"`                    //
+	URL              string          `json:"url"`                    //
 	Visited          bool            `json:"visited"`                //
+	Created
+	Votable
+}
+
+// Comment represents a subreddit post comment
+type Comment struct {
+	ApprovedBy       string          `json:"approved_by"`            // Who approved this comment, null if not a mod
+	AuthorFlairClass string          `json:"author_flair_css_class"` // CSS class of the author's flair
+	AuthorFlairText  string          `json:"author_flair_text"`      // Text of the author's flair
+	Author           string          `json:"author"`                 // Account name of the poster
+	BannedBy         string          `json:"banned_by"`              // Who removed this comment, null if not a mod
+	BodyHTML         string          `json:"body_html"`              // Formatted HTML text as displayed on Reddit
+	Body             string          `json:"body"`                   // Raw unformatted text of the comment
+	Distinguished    string          `json:"distinguished"`          //
+	Edited           json.RawMessage `json:"edited"`                 //
+	Likes            bool            `json:"likes"`                  // How the logged-in user has voted on the link
+	LinkAuthor       string          `json:"link_author"`            // Author of the parent link
+	LinkID           string          `json:"id"`                     // ID of the link this comment is in
+	LinkTitle        string          `json:"link_title"`             // Title of the parent link
+	LinkURL          string          `json:"title_url"`              // Link URL of the parent link
+	Name             string          `json:"name"`                   // Fullname of item, e.g. "t3_c3v7f8u"
+	NumReports       int             `json:"num_reports"`            // Number of times comment has been reported, null if not a mod
+	ParentID         string          `json:"parent_id"`              // ID of the thing this comment is a reply to
+	Saved            bool            `json:"saved"`                  // True if this post is saved by the logged in user
+	ScoreHidden      bool            `json:"score_hidden"`           // Whether the comment's score is currently hidden.
+	Score            int             `json:"score"`                  // The net-score of the link
+	SubredditID      string          `json:"subreddit_id"`           // ID of the subreddit
+	Subreddit        string          `json:"subreddit"`              // Subreddit name
 	Created
 	Votable
 }
