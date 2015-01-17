@@ -24,16 +24,18 @@ type Thing struct {
 	Name string          `json:"name"` // Fullname of item, e.g. "t1_c3v7f8u"
 }
 
+// Created implements the Created class.
 type Created struct {
 	Local json.Number `json:"created"`     // Time of creation in local epoch-second format
 	UTC   json.Number `json:"created_utc"` // Time of creation in UTC epoch-second format
 }
 
-// Time returns time.Time in local format from UTC
+// Time returns created time in local format
 func (c *Created) Time() time.Time {
 	return timeFromNumber(c.UTC)
 }
 
+// Votable implements the Votable class
 type Votable struct {
 	Downs int  `json:"downs"`           // Number of downvotes. (includes own)
 	Likes bool `json:"likes,omitempty"` // True if thing is liked by the user
@@ -82,7 +84,7 @@ type Link struct {
 	Saved            bool            `json:"saved"`                  // True if this post is saved by the logged in user
 	Score            int             `json:"score"`                  // The net-score of the link
 	Selfpost         bool            `json:"is_self"`                // True if this link is a selfpost
-	SelftextHtml     string          `json:"selftext_html"`          //
+	SelftextHTML     string          `json:"selftext_html"`          //
 	Selftext         string          `json:"selftext"`               //
 	Stickied         bool            `json:"stickied"`               //
 	SubredditID      string          `json:"subreddit_id"`           //
@@ -127,7 +129,7 @@ type Comment struct {
 type CommentResult struct {
 	ID          string `json:"id"`          // UNKNOWN
 	Name        string `json:"link"`        // Full name of item, e.g. "t3_c3v7f8u"
-	ContentHtml string `json:"contentHTML"` // Comment text HTML formatted
+	ContentHTML string `json:"contentHTML"` // Comment text HTML formatted
 	Content     string `json:"contentText"` // Comment text plain
 	Replies     string `json:"replies"`     // UNKNOWN
 	Parent      string `json:"parent"`      // Parent item

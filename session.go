@@ -12,9 +12,10 @@ import (
 )
 
 var (
-	ErrBadCookie = errors.New("Bad cookie")
+	ErrBadCookie = errors.New("bad cookie")
 )
 
+// RateLimit provides access to the Reddit ratelimit values for a session
 type RateLimit struct {
 	Remaining int
 	Reset     int

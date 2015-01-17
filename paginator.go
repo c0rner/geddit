@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	MaxLimit = 100 // Listing max number of returned Link items
+	// MaxLimit is the upper maximum limit for Session.Listing() requests
+	MaxLimit = 100
 )
 
 // Paginator is the interface that wraps methods for pagination of the Listing type
