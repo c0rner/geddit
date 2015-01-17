@@ -1,8 +1,8 @@
 # Rego ![Gopher](https://github.com/c0rner/c0rner.github.io/blob/master/images/redditgopher_small.png)
-Reddit API bindings for Go. Things are currently in a state of flux as I try to figure out what parts of the API I need and how to implement them.
+Reddit API bindings for Go. The primary focus of this package is to be a tool for writing bots and not a full API implementation.
 
 ## Documentation
-http://godoc.org/github.com/c0rner/rego
+[![GoDoc](https://godoc.org/github.com/c0rner/rego?status.svg)](https://godoc.org/github.com/c0rner/rego)
 
 ### Example: Listing 5 newest /r/worldnews link posts
 ```go
