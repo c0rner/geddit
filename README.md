@@ -2,7 +2,10 @@
 Reddit API bindings for Go. The primary focus of this package is to be a tool for writing bots and not a full API implementation.
 
 ## Documentation
+Browse the online reference documentation:
+
 [![GoDoc](https://godoc.org/github.com/c0rner/rego?status.svg)](https://godoc.org/github.com/c0rner/rego)
+[![Go Walker](http://gowalker.org/api/v1/badge)](https://gowalker.org/github.com/c0rner/rego).
 
 ### Example: Listing 5 newest /r/worldnews link posts
 ```go
