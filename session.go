@@ -22,7 +22,7 @@ type RateLimit struct {
 }
 
 // Session is an active Reddit session that initially is unauthenticated. An authenticated
-// session can be set up using Session.Login or by updating Session.Cookie manually.
+// session can be set up using Session.Login or Session.SetCookie.
 type Session struct {
 	client    *http.Client
 	Cookie    string // Session cookie (empty if not logged in)
@@ -40,8 +40,39 @@ func NewSession(ua string) *Session {
 	}
 }
 
+// Me returns Account type populated with data for the currently
+// authenticated user.  This is equivalent to using Session.User()
+// and providing the authenticated username.
 func (s *Session) Me() (*Account, error) {
 	resp, err := s.get(buildURL(apiMe, true), nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	thing := Thing{}
+	err = json.NewDecoder(resp.Body).Decode(&thing)
+	if err != nil {
+		return nil, err
+	}
+
+	if thing.Kind != TypeAccount {
+		// TODO.. handle error
+	}
+
+	account := Account{}
+	err = json.Unmarshal(thing.Data, &account)
+	if err != nil {
+		return nil, err
+	}
+
+	return &account, nil
+}
+
+// User returns Account type populated with data for user u.
+func (s *Session) User(u string) (*Account, error) {
+	url := fmt.Sprintf(buildURL(apiUserAbout, true), u)
+	resp, err := s.get(url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -155,14 +186,6 @@ func (s *Session) authenticate(u string, p string) error {
 	if resp.StatusCode != http.StatusOK {
 		return errors.New(resp.Status)
 	}
-	if err == nil {
-		// FIXME, the needs to be refactored, possibly moved into a c.Do() wrapper
-		// Atoi errors can safely be ignored as 0 will be returned on bad input
-		// and we will not need to check that each header really exists
-		s.RateLimit.Used, _ = strconv.Atoi(resp.Header.Get("X-Ratelimit-Used"))
-		s.RateLimit.Reset, _ = strconv.Atoi(resp.Header.Get("X-Ratelimit-Reset"))
-		s.RateLimit.Remaining, _ = strconv.Atoi(resp.Header.Get("X-Ratelimit-Remaining"))
-	}
 
 	r, err := getJSON(resp.Body)
 	if err != nil {
@@ -233,7 +256,14 @@ func (s *Session) post(u string, v url.Values) (*http.Response, error) {
 
 func (s *Session) do(req *http.Request) (*http.Response, error) {
 	s.lock.Lock()
-	result, err := s.client.Do(req)
+	resp, err := s.client.Do(req)
 	s.lock.Unlock()
-	return result, err
+	if err == nil {
+		// Atoi errors can safely be ignored as 0 will be returned on bad input
+		// and we will not need to check that each header really exists
+		s.RateLimit.Used, _ = strconv.Atoi(resp.Header.Get("X-Ratelimit-Used"))
+		s.RateLimit.Reset, _ = strconv.Atoi(resp.Header.Get("X-Ratelimit-Reset"))
+		s.RateLimit.Remaining, _ = strconv.Atoi(resp.Header.Get("X-Ratelimit-Remaining"))
+	}
+	return resp, err
 }

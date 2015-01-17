@@ -6,13 +6,14 @@ import (
 
 // Reddit API methods
 const (
-	apiClear   = "/api/clear_sessions"
-	apiComment = "/api/comment"
-	apiDelete  = "/api/del"
-	apiListing = "/%s.json"
-	apiLogin   = "/api/login"
-	apiMe      = "/api/me.json"
-	apiSubmit  = "/api/submit"
+	apiClear     = "/api/clear_sessions"
+	apiComment   = "/api/comment"
+	apiDelete    = "/api/del"
+	apiListing   = "/%s.json"
+	apiLogin     = "/api/login"
+	apiMe        = "/api/me.json"
+	apiUserAbout = "/user/%s/about.json"
+	apiSubmit    = "/api/submit"
 )
 
 const (

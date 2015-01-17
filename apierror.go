@@ -33,12 +33,12 @@ func (e APIError) Error() string {
 	return fmt.Sprintf("%s: %s", e.id, e.desc)
 }
 
-// IsRatelimited returns true if a ratelimit is in effect
+// IsRatelimited returns true if a ratelimit is in effect for the error
 func (e APIError) IsRatelimited() bool {
 	return e.wait.After(time.Now())
 }
 
-// Duration returns the duration remaining of the active ratelimit
+// Duration returns the time remaining of active ratelimit for the error
 func (e APIError) Duration() time.Duration {
 	return e.wait.Sub(time.Now())
 }
