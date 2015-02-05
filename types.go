@@ -69,7 +69,7 @@ type Link struct {
 	Clicked          bool            `json:"clicked"`                //
 	Distinguished    string          `json:"distinguished"`          //
 	Domain           string          `json:"domain"`                 // The domain of this link
-	Edited           json.RawMessage `json:"edited"`                 //
+	Edited           Edited          `json:"edited"`                 //
 	Hidden           bool            `json:"hidden"`                 // True if the post is hidden by user
 	ID               string          `json:"id"`                     // Item identifier, e.g. "c3v7f8u"
 	IsNsfw           bool            `json:"over_18"`                // True if the post is tagged as NSFW
@@ -133,4 +133,25 @@ type CommentResult struct {
 	Content     string `json:"contentText"` // Comment text plain
 	Replies     string `json:"replies"`     // UNKNOWN
 	Parent      string `json:"parent"`      // Parent item
+}
+
+type Edited struct {
+	// Post has been edited false/true
+	Status bool
+	// Time last edited in UTC epoch-second format
+	UTC time.Time
+}
+
+func (e *Edited) UnmarshalJSON(b []byte) error {
+	var jnum json.Number
+
+	err := json.Unmarshal(b, &jnum)
+	if err != nil {
+		e.UTC = time.Unix(0, 0)
+		return json.Unmarshal(b, &e.Status)
+	}
+
+	e.Status = true
+	e.UTC = timeFromNumber(jnum)
+	return nil
 }
